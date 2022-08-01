@@ -10,52 +10,45 @@
 // https://docs.thecatapi.com/
 //
 
+const fetchBreedDescription = function(breedName, callback) {
+  //
+  // setup function variables
+  //
+  const request = require('request');
+  const apiEndPoint = "https://api.thecatapi.com/v1/breeds/search?q=";
 
-const request = require('request');
-const apiEndPoint = "https://api.thecatapi.com/v1/breeds/search?q=";
-const exampleSearch = "?q=sib"; // siberian cats
-//
-// argv to read input & error check
-//
-const inputWords = process.argv.slice(2);
-if (inputWords.length < 1) {
-  console.log("ERROR: missing input to breedFetcher!");
-  console.log("EXAMPLE: node breedFetcher.js siberian");
-  console.log();
-  return;
-}
-
-request(apiEndPoint + inputWords[0], (error, response, body) => {
-  if (error) {
-    console.log("Oops!  We have an error accessing the API: \n" + apiEndPoint + '\n');
-    console.log('error:', error); // Print the error if one occurred
-    
-    process.exit();
-  }
-  
-  // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-
-  if (response.statusCode === 200) {
-    const data = JSON.parse(body);
-    if (data.length > 0) { // JSON returns as an object, but nested in array - if array is 0 length, no data.
-      // console.log(body)
-      // console.log(data); // 'data' is an object (uncomment to view key value pairs)
-      console.log("You searched for " + inputWords[0] + '\n');
-      console.log(constrainText(data[0].description,60));
-    } else {
-      console.log("Oops!\nWe didn't find any feline breeds that matched your search of " + inputWords[0]);
-      return;
+  //
+  // access API
+  //
+  request(apiEndPoint + breedName, (error, response, body) => {
+    if (error) {
+      callback(error,"Oops!  We have an error accessing the API: \n" + apiEndPoint + '\n');
     }
-  } else {
-    console.log("ERROR FETCHING DATA: " + response.statusCode);
-  }
-});
+
+    //
+    // process response & output data
+    //
+    if (response.statusCode === 200) {
+      const data = JSON.parse(body);
+      if (data.length > 0) { // JSON returns as an object, but nested in array - if array is 0 length, no data.
+        // console.log(body)
+        // console.log(data); // 'data' is an object (uncomment to view key value pairs)
+        const searchResult = "You searched for " + breedName + '\n' + constrainText(data[0].description,60);
+        callback(null,data[0].description);
+      } else {
+        callback("Not Found","Oops!\nWe didn't find any feline breeds that matched your search of " + breedName);
+        return;
+      }
+    } else {
+      callback(response.statusCode, "ERROR FETCHING DATA: " + response.statusCode);
+    }
+  });
+};
 
 
 const constrainText = function(inputText,textLength) {
   let outputString = '';
-  for(let x = 0; x <= inputText.length; x ++)
-  {
+  for (let x = 0; x <= inputText.length; x ++) {
     // if x is a multiple of textLength add \n.
     if ((x % textLength) === 0) {
       outputString += '\n';
@@ -63,4 +56,6 @@ const constrainText = function(inputText,textLength) {
     outputString += inputText.charAt(x);
   }
   return outputString;
-}
+};
+
+module.exports = { fetchBreedDescription };
