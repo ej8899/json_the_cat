@@ -6,7 +6,7 @@
 
 //
 // REFERENCES:
-// https://thecatapi.com/ 
+// https://thecatapi.com/
 // https://docs.thecatapi.com/
 //
 
@@ -18,15 +18,15 @@ const exampleSearch = "?q=sib"; // siberian cats
 // argv to read input & error check
 //
 const inputWords = process.argv.slice(2);
-if(inputWords.length < 1) {
-  console.log("ERROR: need input URL and output filename");
-  console.log("EXAMPLE: node fetcher.js https://www.google.com/ myoutputfile.txt");
+if (inputWords.length < 1) {
+  console.log("ERROR: missing input to breedFetcher!");
+  console.log("EXAMPLE: node breedFetcher.js siberian");
   console.log();
   return;
 }
 
 request(apiEndPoint + inputWords[0], (error, response, body) => {
-  if(error) {
+  if (error) {
     console.log("Oops!  We have an error accessing the API: \n" + apiEndPoint + '\n');
     console.log('error:', error); // Print the error if one occurred
     
@@ -35,9 +35,9 @@ request(apiEndPoint + inputWords[0], (error, response, body) => {
   
   // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
 
-  if(response.statusCode === 200) {
+  if (response.statusCode === 200) {
     const data = JSON.parse(body);
-    if(data.length > 0) { // JSON returns as an object, but nested in array - if array is 0 length, no data.
+    if (data.length > 0) { // JSON returns as an object, but nested in array - if array is 0 length, no data.
       // console.log(body)
       // console.log(data); // 'data' is an object (uncomment to view key value pairs)
       console.log("You searched for " + inputWords[0] + '\n');
