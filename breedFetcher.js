@@ -41,7 +41,7 @@ request(apiEndPoint + inputWords[0], (error, response, body) => {
       // console.log(body)
       // console.log(data); // 'data' is an object (uncomment to view key value pairs)
       console.log("You searched for " + inputWords[0] + '\n');
-      console.log(data[0].description);
+      console.log(constrainText(data[0].description,60));
     } else {
       console.log("Oops!\nWe didn't find any feline breeds that matched your search of " + inputWords[0]);
       return;
@@ -50,3 +50,17 @@ request(apiEndPoint + inputWords[0], (error, response, body) => {
     console.log("ERROR FETCHING DATA: " + response.statusCode);
   }
 });
+
+
+const constrainText = function(inputText,textLength) {
+  let outputString = '';
+  for(let x = 0; x <= inputText.length; x ++)
+  {
+    // if x is a multiple of textLength add \n.
+    if ((x % textLength) === 0) {
+      outputString += '\n';
+    }
+    outputString += inputText.charAt(x);
+  }
+  return outputString;
+}
